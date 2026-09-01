@@ -72,7 +72,11 @@ fi
 if [ ! -f "tools/halAssetTool" ] || [ `md5sum tools/halAssetTool | grep -c f4345d2fd5e9adcde8a0194fb004b6be` -eq 0 ]
 then
 	[ "$DETECTED_OS" = "linux" ] && curl https://github.com/santaclose/halAssetTool/releases/download/0.14/halAssetTool_linux_x86 -L --output tools/halAssetTool
-	[ "$DETECTED_OS" = "macos" ] && curl https://github.com/santaclose/halAssetTool/releases/download/0.14/halAssetTool_macos_arm64 -L --output tools/halAssetTool
+	# Release 0.14 publishes only halAssetTool_linux_x86 -- there is no macOS asset at that tag,
+	# so the original URL 404s and writes a 9-byte "Not Found" text file that later fails with
+	# "line 1: Not: command not found". 0.12 is the newest tag with a real Mach-O arm64 build
+	# (0.15/0.16 publish an unsuffixed asset that is actually a Linux x86-64 ELF).
+	[ "$DETECTED_OS" = "macos" ] && curl https://github.com/santaclose/halAssetTool/releases/download/0.12/halAssetTool_macos_arm64 -L --output tools/halAssetTool
 	chmod +x tools/halAssetTool
 fi
 
